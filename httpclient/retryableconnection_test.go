@@ -3,10 +3,10 @@ package httpclient
 import (
 	"errors"
 	"fmt"
+	"github.com/jfrog/jfrog-client-go/utils/_tests"
 	"github.com/jfrog/jfrog-client-go/utils/errorutils"
 	"github.com/jfrog/jfrog-client-go/utils/io/httputils"
 	"github.com/jfrog/jfrog-client-go/utils/log"
-	"github.com/jfrog/jfrog-client-go/utils/tests"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -297,13 +297,13 @@ func sendIdleAndSleep(fw *flushWriter, iterations, sec int) {
 }
 
 func startMockServer() int {
-	handlers := tests.HttpServerHandlers{}
+	handlers := _tests.HttpServerHandlers{}
 	handlers["/simple"] = simpleHandler
 	handlers["/exceed/retries"] = exceedRetriesHandler
 	handlers["/window"] = windowHandler
 	handlers["/"] = http.NotFound
 
-	port, err := tests.StartHttpServer(handlers)
+	port, err := _tests.StartHttpServer(handlers)
 	if err != nil {
 		log.Error(err)
 		os.Exit(1)

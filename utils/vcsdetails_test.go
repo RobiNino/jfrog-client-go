@@ -23,31 +23,31 @@ func TestVcsDetails(t *testing.T) {
 }
 
 func initVcsTestDir(t *testing.T) string {
-	testsdataSrc := filepath.Join("testsdata", "vcs")
-	testsdataTarget := filepath.Join("testsdata", "tmp")
-	err := fileutils.CopyDir(testsdataSrc, testsdataTarget, true, nil)
+	testdataSrc := filepath.Join("testdata", "vcs")
+	testdataTarget := filepath.Join("testdata", "tmp")
+	err := fileutils.CopyDir(testdataSrc, testdataTarget, true, nil)
 	if err != nil {
 		t.Error(err)
 	}
-	if found, err := fileutils.IsDirExists(filepath.Join(testsdataTarget, "gitdata"), false); found {
+	if found, err := fileutils.IsDirExists(filepath.Join(testdataTarget, "gitdata"), false); found {
 		if err != nil {
 			t.Error(err)
 		}
-		err := fileutils.RenamePath(filepath.Join(testsdataTarget, "gitdata"), filepath.Join(testsdataTarget, ".git"))
-		if err != nil {
-			t.Error(err)
-		}
-	}
-	if found, err := fileutils.IsDirExists(filepath.Join(testsdataTarget, "OtherGit", "gitdata"), false); found {
-		if err != nil {
-			t.Error(err)
-		}
-		err := fileutils.RenamePath(filepath.Join(testsdataTarget, "OtherGit", "gitdata"), filepath.Join(testsdataTarget, "OtherGit", ".git"))
+		err := fileutils.RenamePath(filepath.Join(testdataTarget, "gitdata"), filepath.Join(testdataTarget, ".git"))
 		if err != nil {
 			t.Error(err)
 		}
 	}
-	path, err := filepath.Abs(testsdataTarget)
+	if found, err := fileutils.IsDirExists(filepath.Join(testdataTarget, "OtherGit", "gitdata"), false); found {
+		if err != nil {
+			t.Error(err)
+		}
+		err := fileutils.RenamePath(filepath.Join(testdataTarget, "OtherGit", "gitdata"), filepath.Join(testdataTarget, "OtherGit", ".git"))
+		if err != nil {
+			t.Error(err)
+		}
+	}
+	path, err := filepath.Abs(testdataTarget)
 	if err != nil {
 		t.Error(err)
 	}

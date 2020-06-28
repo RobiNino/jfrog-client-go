@@ -75,7 +75,7 @@ func TestContentReaderEmptyResult(t *testing.T) {
 
 func getTestDataPath() string {
 	dir, _ := os.Getwd()
-	return filepath.Join(dir, "..", "..", "..", "tests", "testsdata")
+	return filepath.Join(dir, "..", "..", "..", "tests", "testdata")
 }
 
 func TestCloseReader(t *testing.T) {

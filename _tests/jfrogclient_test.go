@@ -1,4 +1,4 @@
-package tests
+package _tests
 
 import (
 	"flag"
@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/jfrog/jfrog-client-go/utils/_tests"
 	"github.com/jfrog/jfrog-client-go/utils/log"
-	"github.com/jfrog/jfrog-client-go/utils/tests"
 )
 
 const (
@@ -56,9 +56,9 @@ func TestUnitTests(t *testing.T) {
 	}
 
 	setJfrogHome(homePath)
-	packages := tests.GetTestPackages("./../...")
-	packages = tests.ExcludeTestsPackage(packages, CliIntegrationTests)
-	tests.RunTests(packages, false)
+	packages := _tests.GetTestPackages("./../...")
+	packages = _tests.ExcludeTestsPackage(packages, CliIntegrationTests)
+	_tests.RunTests(packages, false)
 	cleanUnitTestsJfrogHome(homePath)
 }
 

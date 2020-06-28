@@ -1,4 +1,4 @@
-package tests
+package _tests
 
 import (
 	"github.com/jfrog/jfrog-client-go/artifactory/services"

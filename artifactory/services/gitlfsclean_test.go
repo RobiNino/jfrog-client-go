@@ -12,7 +12,7 @@ import (
 
 func TestExtractRepo(t *testing.T) {
 	pwd, err := os.Getwd()
-	testPath := filepath.Join(pwd, "testsdata", "gitlfs")
+	testPath := filepath.Join(pwd, "testdata", "gitlfs")
 	repo, err := extractRepo(testPath, "lfsConfigExample", "https://localhost:8080/artifactory", lfsConfigUrlExtractor)
 	if err != nil {
 		t.Error("Got err: ", err)

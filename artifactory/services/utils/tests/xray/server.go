@@ -3,8 +3,8 @@ package xray
 import (
 	"fmt"
 	"github.com/buger/jsonparser"
+	clienttests "github.com/jfrog/jfrog-client-go/utils/_tests"
 	"github.com/jfrog/jfrog-client-go/utils/log"
-	clienttests "github.com/jfrog/jfrog-client-go/utils/tests"
 	"io/ioutil"
 	"net/http"
 	"os"

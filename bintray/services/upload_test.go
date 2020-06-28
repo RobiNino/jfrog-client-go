@@ -1,10 +1,10 @@
 package services
 
 import (
+	testsutils "github.com/jfrog/jfrog-client-go/_tests"
 	"github.com/jfrog/jfrog-client-go/bintray/services/utils/tests"
 	"github.com/jfrog/jfrog-client-go/bintray/services/versions"
 	"github.com/jfrog/jfrog-client-go/httpclient"
-	testsutils "github.com/jfrog/jfrog-client-go/tests"
 	"github.com/jfrog/jfrog-client-go/utils/log"
 	"path/filepath"
 	"strconv"
