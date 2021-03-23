@@ -5,6 +5,8 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	pipelinesAuth "github.com/jfrog/jfrog-client-go/pipelines/auth"
+	pipelinesServices "github.com/jfrog/jfrog-client-go/pipelines/services"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -36,6 +38,7 @@ import (
 var RtUrl *string
 var DistUrl *string
 var XrayUrl *string
+var PipelinesUrl *string
 var RtUser *string
 var RtPassword *string
 var RtApiKey *string
@@ -78,10 +81,13 @@ var testsBundleDeleteLocalService *distributionServices.DeleteLocalReleaseBundle
 var testsBundleDeleteRemoteService *distributionServices.DeleteReleaseBundleService
 
 // Xray Services
-var testsXrayVersionService *xrayServices.VersionService
 var testsXrayWatchService *xrayServices.WatchService
 var testsXrayPolicyService *xrayServices.PolicyService
 var testXrayBinMgrService *xrayServices.BinMgrService
+
+// Pipelines Services
+var testsPipelinesIntegrationsService *pipelinesServices.IntegrationsService
+var testsPipelinesSourcesService *pipelinesServices.SourcesService
 
 var timestamp = time.Now().Unix()
 var trueValue = true
@@ -99,6 +105,7 @@ func init() {
 	RtUrl = flag.String("rt.url", "http://localhost:8081/artifactory/", "Artifactory url")
 	DistUrl = flag.String("ds.url", "", "Distribution url")
 	XrayUrl = flag.String("xr.url", "", "Xray url")
+	PipelinesUrl = flag.String("pipe.url", "", "Pipelines url")
 	RtUser = flag.String("rt.user", "admin", "Artifactory username")
 	RtPassword = flag.String("rt.password", "password", "Artifactory password")
 	RtApiKey = flag.String("rt.apikey", "", "Artifactory user API key")
@@ -195,14 +202,6 @@ func createDistributionManager() {
 	testsBundleDeleteLocalService.DistDetails = distDetails
 	testsBundleSetSigningKeyService.DistDetails = distDetails
 	testsBundleDeleteRemoteService.DistDetails = distDetails
-}
-
-func createXrayVersionManager() {
-	xrayDetails := GetXrayDetails()
-	client, err := jfroghttpclient.JfrogClientBuilder().SetServiceDetails(&xrayDetails).Build()
-	failOnHttpClientCreation(err)
-	testsXrayVersionService = xrayServices.NewVersionService(client)
-	testsXrayVersionService.XrayDetails = xrayDetails
 }
 
 func createArtifactoryCreateLocalRepositoryManager() {
@@ -333,6 +332,22 @@ func createXrayBinMgrManager() {
 	testXrayBinMgrService.XrayDetails = XrayDetails
 }
 
+func createPipelinesIntegrationsManager() {
+	pipelinesDetails := GetPipelinesDetails()
+	client, err := jfroghttpclient.JfrogClientBuilder().SetServiceDetails(&pipelinesDetails).Build()
+	failOnHttpClientCreation(err)
+	testsPipelinesIntegrationsService = pipelinesServices.NewIntegrationsService(client)
+	testsPipelinesIntegrationsService.ServiceDetails = pipelinesDetails
+}
+
+func createPipelinesSourcesManager() {
+	pipelinesDetails := GetPipelinesDetails()
+	client, err := jfroghttpclient.JfrogClientBuilder().SetServiceDetails(&pipelinesDetails).Build()
+	failOnHttpClientCreation(err)
+	testsPipelinesSourcesService = pipelinesServices.NewSourcesService(client)
+	testsPipelinesSourcesService.ServiceDetails = pipelinesDetails
+}
+
 func failOnHttpClientCreation(err error) {
 	if err != nil {
 		log.Error(fmt.Sprintf(HttpClientCreationFailureMessage, err.Error()))
@@ -359,6 +374,13 @@ func GetXrayDetails() auth.ServiceDetails {
 	xrayDetails.SetUrl(clientutils.AddTrailingSlashIfNeeded(*XrayUrl))
 	setAuthenticationDetail(xrayDetails)
 	return xrayDetails
+}
+
+func GetPipelinesDetails() auth.ServiceDetails {
+	pDetails := pipelinesAuth.NewPipelinesDetails()
+	pDetails.SetUrl(clientutils.AddTrailingSlashIfNeeded(*PipelinesUrl))
+	setAuthenticationDetail(pDetails)
+	return pDetails
 }
 
 func setAuthenticationDetail(details auth.ServiceDetails) {
