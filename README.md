@@ -44,7 +44,9 @@
       - [Fetching Access Tokens](#fetching-access-tokens)
       - [Refreshing an Access Token](#refreshing-an-access-token)
       - [Revoking an Access Token](#revoking-an-access-token)
+      - [Create API Key](#create-api-key)
       - [Regenerate API Key](#regenerate-api-key)
+      - [Get API Key](#get-api-key)
       - [Creating and Updating Local Repository](#creating-and-updating-local-repository)
       - [Creating and Updating Remote Repository](#creating-and-updating-remote-repository)
       - [Creating and Updating Virtual Repository](#creating-and-updating-virtual-repository)
@@ -115,6 +117,7 @@
       - [Delete an Xray Watch](#delete-an-xray-watch)
       - [Creating a Security Xray Policy](#creating-a-security-xray-policy)
       - [Creating a License Xray Policy](#creating-a-license-xray-policy)
+      - [Get an Xray Policy](#get-an-xray-policy)
       - [Update an Xray Policy](#update-an-xray-policy)
       - [Delete an Xray Policy](#delete-an-xray-policy)
       - [Add builds to indexing configuration](#add-builds-to-indexing-configuration)
@@ -651,6 +654,14 @@ servicesManager.GetRepository("generic-repo")
 You can get all repositories from Artifactory:
 ```go
 servicesManager.GetAllRepositories()
+```
+
+You can get all repositories from Artifactory filtered according to theirs type and/or theirs package type:
+```go
+params := services.NewRepositoriesFilterParams()
+params.RepoType = "remote"
+params.PackageType = "maven"
+err := servicesManager.GetAllRepositoriesFiltered(params)
 ```
 
 #### Creating and Updating Repository Replications

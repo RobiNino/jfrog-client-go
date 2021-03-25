@@ -5,8 +5,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	pipelinesAuth "github.com/jfrog/jfrog-client-go/pipelines/auth"
-	pipelinesServices "github.com/jfrog/jfrog-client-go/pipelines/services"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -14,6 +12,9 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	pipelinesAuth "github.com/jfrog/jfrog-client-go/pipelines/auth"
+	pipelinesServices "github.com/jfrog/jfrog-client-go/pipelines/services"
 
 	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	"github.com/jfrog/jfrog-client-go/artifactory/services/utils/tests"
@@ -617,8 +618,11 @@ func getRepo(t *testing.T, repoKey string) *services.RepositoryDetails {
 	return data
 }
 
-func getAllRepos(t *testing.T) *[]services.RepositoryDetails {
-	data, err := testsRepositoriesService.GetAll()
+func getAllRepos(t *testing.T, repoType, packageType string) *[]services.RepositoryDetails {
+	params := services.NewRepositoriesFilterParams()
+	params.RepoType = repoType
+	params.PackageType = packageType
+	data, err := testsRepositoriesService.GetAllFromTypeAndPackage(params)
 	assert.NoError(t, err, "Failed to get all repositories details")
 	return data
 }
