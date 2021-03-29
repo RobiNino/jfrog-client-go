@@ -55,7 +55,7 @@ func (is *IntegrationsService) CreateGithubIntegration(integrationName, token st
 		MasterIntegrationId:   githubId,
 		MasterIntegrationName: GithubName,
 		ProjectId:             defaultProjectId,
-		FormJSONValues: []jsonValues{
+		FormJSONValues: []JsonValues{
 			{urlLabel, githubDefaultUrl},
 			{tokenLabel, token},
 		},
@@ -69,7 +69,7 @@ func (is *IntegrationsService) CreateGithubEnterpriseIntegration(integrationName
 		MasterIntegrationId:   githubEnterpriseId,
 		MasterIntegrationName: GithubEnterpriseName,
 		ProjectId:             defaultProjectId,
-		FormJSONValues: []jsonValues{
+		FormJSONValues: []JsonValues{
 			{urlLabel, url},
 			{tokenLabel, token},
 		},
@@ -83,7 +83,7 @@ func (is *IntegrationsService) CreateBitbucketIntegration(integrationName, usern
 		MasterIntegrationId:   bitbucketId,
 		MasterIntegrationName: BitbucketName,
 		ProjectId:             defaultProjectId,
-		FormJSONValues: []jsonValues{
+		FormJSONValues: []JsonValues{
 			{urlLabel, bitbucketDefaultUrl},
 			{usernameLabel, username},
 			{tokenLabel, token},
@@ -98,7 +98,7 @@ func (is *IntegrationsService) CreateBitbucketServerIntegration(integrationName,
 		MasterIntegrationId:   bitbucketServerId,
 		MasterIntegrationName: BitbucketServerName,
 		ProjectId:             defaultProjectId,
-		FormJSONValues: []jsonValues{
+		FormJSONValues: []JsonValues{
 			{urlLabel, url},
 			{usernameLabel, username},
 			{passwordLabel, passwordOrToken},
@@ -113,7 +113,7 @@ func (is *IntegrationsService) CreateGitlabIntegration(integrationName, url, tok
 		MasterIntegrationId:   gitlabId,
 		MasterIntegrationName: GitlabName,
 		ProjectId:             defaultProjectId,
-		FormJSONValues: []jsonValues{
+		FormJSONValues: []JsonValues{
 			{urlLabel, url},
 			{tokenLabel, token},
 		},
@@ -127,7 +127,7 @@ func (is *IntegrationsService) CreateArtifactoryIntegration(integrationName, url
 		MasterIntegrationId:   artifactoryId,
 		MasterIntegrationName: ArtifactoryName,
 		ProjectId:             defaultProjectId,
-		FormJSONValues: []jsonValues{
+		FormJSONValues: []JsonValues{
 			{urlLabel, url},
 			{userLabel, user},
 			{apikeyLabel, apikey},
@@ -176,13 +176,13 @@ type Integration struct {
 	MasterIntegrationName string       `json:"masterIntegrationName,omitempty"`
 	ProjectId             int          `json:"projectId,omitempty"`
 	Environments          []string     `json:"environments,omitempty"`
-	FormJSONValues        []jsonValues `json:"formJSONValues,omitempty"`
+	FormJSONValues        []JsonValues `json:"formJSONValues,omitempty"`
 
 	// Following fields returned when fetching or creating integration:
 	Id int `json:"id,omitempty"`
 }
 
-type jsonValues struct {
+type JsonValues struct {
 	Label string `json:"label,omitempty"`
 	Value string `json:"value,omitempty"`
 }
