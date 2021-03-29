@@ -50,12 +50,14 @@ const (
 )
 
 func (is *IntegrationsService) CreateGithubIntegration(integrationName, token string) (id int, err error) {
-	integration := Integration{
-		Name:                  integrationName,
-		MasterIntegrationId:   githubId,
-		MasterIntegrationName: GithubName,
-		ProjectId:             defaultProjectId,
-		FormJSONValues: []JsonValues{
+	integration := IntegrationCreation{
+		Integration: Integration{
+			Name:                  integrationName,
+			MasterIntegrationId:   githubId,
+			MasterIntegrationName: GithubName,
+			ProjectId:             defaultProjectId,
+		},
+		FormJSONValues: []jsonValues{
 			{urlLabel, githubDefaultUrl},
 			{tokenLabel, token},
 		},
@@ -64,12 +66,14 @@ func (is *IntegrationsService) CreateGithubIntegration(integrationName, token st
 }
 
 func (is *IntegrationsService) CreateGithubEnterpriseIntegration(integrationName, url, token string) (id int, err error) {
-	integration := Integration{
-		Name:                  integrationName,
-		MasterIntegrationId:   githubEnterpriseId,
-		MasterIntegrationName: GithubEnterpriseName,
-		ProjectId:             defaultProjectId,
-		FormJSONValues: []JsonValues{
+	integration := IntegrationCreation{
+		Integration: Integration{
+			Name:                  integrationName,
+			MasterIntegrationId:   githubEnterpriseId,
+			MasterIntegrationName: GithubEnterpriseName,
+			ProjectId:             defaultProjectId,
+		},
+		FormJSONValues: []jsonValues{
 			{urlLabel, url},
 			{tokenLabel, token},
 		},
@@ -78,12 +82,13 @@ func (is *IntegrationsService) CreateGithubEnterpriseIntegration(integrationName
 }
 
 func (is *IntegrationsService) CreateBitbucketIntegration(integrationName, username, token string) (id int, err error) {
-	integration := Integration{
-		Name:                  integrationName,
-		MasterIntegrationId:   bitbucketId,
-		MasterIntegrationName: BitbucketName,
-		ProjectId:             defaultProjectId,
-		FormJSONValues: []JsonValues{
+	integration := IntegrationCreation{
+		Integration: Integration{
+			Name:                  integrationName,
+			MasterIntegrationId:   bitbucketId,
+			MasterIntegrationName: BitbucketName,
+			ProjectId:             defaultProjectId},
+		FormJSONValues: []jsonValues{
 			{urlLabel, bitbucketDefaultUrl},
 			{usernameLabel, username},
 			{tokenLabel, token},
@@ -93,12 +98,13 @@ func (is *IntegrationsService) CreateBitbucketIntegration(integrationName, usern
 }
 
 func (is *IntegrationsService) CreateBitbucketServerIntegration(integrationName, url, username, passwordOrToken string) (id int, err error) {
-	integration := Integration{
-		Name:                  integrationName,
-		MasterIntegrationId:   bitbucketServerId,
-		MasterIntegrationName: BitbucketServerName,
-		ProjectId:             defaultProjectId,
-		FormJSONValues: []JsonValues{
+	integration := IntegrationCreation{
+		Integration: Integration{
+			Name:                  integrationName,
+			MasterIntegrationId:   bitbucketServerId,
+			MasterIntegrationName: BitbucketServerName,
+			ProjectId:             defaultProjectId},
+		FormJSONValues: []jsonValues{
 			{urlLabel, url},
 			{usernameLabel, username},
 			{passwordLabel, passwordOrToken},
@@ -108,12 +114,13 @@ func (is *IntegrationsService) CreateBitbucketServerIntegration(integrationName,
 }
 
 func (is *IntegrationsService) CreateGitlabIntegration(integrationName, url, token string) (id int, err error) {
-	integration := Integration{
-		Name:                  integrationName,
-		MasterIntegrationId:   gitlabId,
-		MasterIntegrationName: GitlabName,
-		ProjectId:             defaultProjectId,
-		FormJSONValues: []JsonValues{
+	integration := IntegrationCreation{
+		Integration: Integration{
+			Name:                  integrationName,
+			MasterIntegrationId:   gitlabId,
+			MasterIntegrationName: GitlabName,
+			ProjectId:             defaultProjectId},
+		FormJSONValues: []jsonValues{
 			{urlLabel, url},
 			{tokenLabel, token},
 		},
@@ -122,12 +129,13 @@ func (is *IntegrationsService) CreateGitlabIntegration(integrationName, url, tok
 }
 
 func (is *IntegrationsService) CreateArtifactoryIntegration(integrationName, url, user, apikey string) (id int, err error) {
-	integration := Integration{
-		Name:                  integrationName,
-		MasterIntegrationId:   artifactoryId,
-		MasterIntegrationName: ArtifactoryName,
-		ProjectId:             defaultProjectId,
-		FormJSONValues: []JsonValues{
+	integration := IntegrationCreation{
+		Integration: Integration{
+			Name:                  integrationName,
+			MasterIntegrationId:   artifactoryId,
+			MasterIntegrationName: ArtifactoryName,
+			ProjectId:             defaultProjectId},
+		FormJSONValues: []jsonValues{
 			{urlLabel, url},
 			{userLabel, user},
 			{apikeyLabel, apikey},
@@ -136,7 +144,7 @@ func (is *IntegrationsService) CreateArtifactoryIntegration(integrationName, url
 	return is.createIntegration(integration)
 }
 
-func (is *IntegrationsService) createIntegration(integration Integration) (id int, err error) {
+func (is *IntegrationsService) createIntegration(integration IntegrationCreation) (id int, err error) {
 	log.Debug("Creating " + integration.MasterIntegrationName + " integration...")
 	content, err := json.Marshal(integration)
 	if err != nil {
@@ -171,18 +179,22 @@ func (is *IntegrationsService) createIntegration(integration Integration) (id in
 }
 
 type Integration struct {
-	Name                  string       `json:"name,omitempty"`
-	MasterIntegrationId   int          `json:"masterIntegrationId,omitempty"`
-	MasterIntegrationName string       `json:"masterIntegrationName,omitempty"`
-	ProjectId             int          `json:"projectId,omitempty"`
-	Environments          []string     `json:"environments,omitempty"`
-	FormJSONValues        []JsonValues `json:"formJSONValues,omitempty"`
-
+	Name                  string   `json:"name,omitempty"`
+	MasterIntegrationId   int      `json:"masterIntegrationId,omitempty"`
+	MasterIntegrationName string   `json:"masterIntegrationName,omitempty"`
+	ProjectId             int      `json:"projectId,omitempty"`
+	Environments          []string `json:"environments,omitempty"`
 	// Following fields returned when fetching or creating integration:
 	Id int `json:"id,omitempty"`
 }
 
-type JsonValues struct {
+// Using this separate struct for creation because FormJSONValues may have values of any type.
+type IntegrationCreation struct {
+	Integration
+	FormJSONValues []jsonValues `json:"formJSONValues,omitempty"`
+}
+
+type jsonValues struct {
 	Label string `json:"label,omitempty"`
 	Value string `json:"value,omitempty"`
 }
