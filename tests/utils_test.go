@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/buger/jsonparser"
+	"github.com/jfrog/jfrog-client-go/utils/errorutils"
 	clientTestUtils "github.com/jfrog/jfrog-client-go/utils/tests"
 	"io/ioutil"
 	"net/http"
@@ -588,7 +589,7 @@ func artifactoryCleanup(t *testing.T) {
 }
 
 func createRepo() error {
-	if !(*TestArtifactory || *TestDistribution || *TestXray) {
+	if !(*TestArtifactory || *TestDistribution || *TestXray || *TestRepository) {
 		return nil
 	}
 	var err error
@@ -775,18 +776,21 @@ func setRpmRepositoryParams(params *services.RpmRepositoryParams, isUpdate bool)
 	}
 }
 
-func getRepoConfig(repoKey string) (body []byte, err error) {
+func getRepoConfig(repoKey string) ([]byte, error) {
 	artDetails := GetRtDetails()
 	artHttpDetails := artDetails.CreateHttpClientDetails()
 	client, err := httpclient.ClientBuilder().Build()
 	if err != nil {
-		return
+		return nil, err
 	}
 	resp, body, _, err := client.SendGet(artDetails.GetUrl()+"api/repositories/"+repoKey, false, artHttpDetails, "")
-	if err != nil || resp.StatusCode != http.StatusOK {
-		return
+	if err != nil {
+		return nil, err
 	}
-	return
+	if err = errorutils.CheckResponseStatus(resp, http.StatusOK); err != nil {
+		return nil, errorutils.CheckError(errorutils.GenerateResponseError(resp.Status, clientutils.IndentJson(body)))
+	}
+	return body, nil
 }
 
 func isEnterprisePlus() (bool, error) {
