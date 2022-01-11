@@ -17,7 +17,7 @@ func TestArtifactoryFederation(t *testing.T) {
 	if !version.NewVersion(rtVersion).AtLeast("7.18.3") {
 		t.Skip("Skipping artifactory test. Federated repositories are only supported by Artifactory 7.18.3 or higher.")
 	}
-	//t.Run("localConvertLocalToFederatedTest", localConvertLocalToFederatedTest)
+	t.Run("localConvertLocalToFederatedTest", localConvertLocalToFederatedTest)
 	//t.Run("localConvertNonExistentLocalToFederatedTest", localConvertNonExistentLocalToFederatedTest)
 	//t.Run("localTriggerFederatedFullSyncAllTest", localTriggerFederatedFullSyncAllTest)
 	//t.Run("localTriggerFederatedFullSyncMirrorTest", localTriggerFederatedFullSyncMirrorTest)
