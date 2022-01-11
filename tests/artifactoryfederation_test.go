@@ -19,7 +19,7 @@ func TestArtifactoryFederation(t *testing.T) {
 	}
 	//t.Run("localConvertLocalToFederatedTest", localConvertLocalToFederatedTest)
 	//t.Run("localConvertNonExistentLocalToFederatedTest", localConvertNonExistentLocalToFederatedTest)
-	t.Run("localTriggerFederatedFullSyncAllTest", localTriggerFederatedFullSyncAllTest)
+	//t.Run("localTriggerFederatedFullSyncAllTest", localTriggerFederatedFullSyncAllTest)
 	//t.Run("localTriggerFederatedFullSyncMirrorTest", localTriggerFederatedFullSyncMirrorTest)
 }
 
