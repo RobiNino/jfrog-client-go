@@ -17,10 +17,10 @@ func TestArtifactoryFederation(t *testing.T) {
 	if !version.NewVersion(rtVersion).AtLeast("7.18.3") {
 		t.Skip("Skipping artifactory test. Federated repositories are only supported by Artifactory 7.18.3 or higher.")
 	}
-	//t.Run("localConvertLocalToFederatedTest", localConvertLocalToFederatedTest)
-	//t.Run("localConvertNonExistentLocalToFederatedTest", localConvertNonExistentLocalToFederatedTest)
-	//t.Run("localTriggerFederatedFullSyncAllTest", localTriggerFederatedFullSyncAllTest)
-	//t.Run("localTriggerFederatedFullSyncMirrorTest", localTriggerFederatedFullSyncMirrorTest)
+	t.Run("localConvertLocalToFederatedTest", localConvertLocalToFederatedTest)
+	t.Run("localConvertNonExistentLocalToFederatedTest", localConvertNonExistentLocalToFederatedTest)
+	t.Run("localTriggerFederatedFullSyncAllTest", localTriggerFederatedFullSyncAllTest)
+	t.Run("localTriggerFederatedFullSyncMirrorTest", localTriggerFederatedFullSyncMirrorTest)
 }
 
 func localConvertLocalToFederatedTest(t *testing.T) {
@@ -47,10 +47,7 @@ func localConvertLocalToFederatedTest(t *testing.T) {
 func localConvertNonExistentLocalToFederatedTest(t *testing.T) {
 	repoKey := GenerateRepoKeyForRepoServiceTest()
 	err := testsFederationService.ConvertLocalToFederated(repoKey)
-	if err != nil {
-		assert.NoError(t, err, "Failed to create "+repoKey)
-		return
-	}
+	assert.Error(t, err, "Failed to not convert "+repoKey)
 }
 
 func localTriggerFederatedFullSyncAllTest(t *testing.T) {

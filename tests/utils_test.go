@@ -833,7 +833,7 @@ func createRepoConfigValidationFunc(repoKey string, expectedConfig interface{}) 
 			if key == "password" {
 				continue
 			}
-			// Download redirect is only supported on Enterprise Plus. False otherwise.
+			// Download Redirect is only supported on Enterprise Plus. Expect false otherwise.
 			if key == "downloadRedirect" {
 				eplus, err := isEnterprisePlus()
 				if err != nil {
