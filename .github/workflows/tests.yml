@@ -68,10 +68,9 @@ jobs:
         path: jfrog-client-go
     - name: Setup Artifactory
       run: |
-        echo "$GOBIN"
         go install github.com/RobiNino/jfrog-testing-infra/go@latest
-        ls -a "$GOBIN"
-        "$GOBIN"/go
+        ls -a ~/go/bin
+        ~/go/bin/go
       env:
         RTLIC: ${{secrets.RTLIC}}
         GOPROXY: direct
