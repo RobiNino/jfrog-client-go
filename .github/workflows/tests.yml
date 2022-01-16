@@ -69,18 +69,14 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
         path: jfrog-client-go
-    - name: Checkout testing infra
-      uses: actions/checkout@v2
-      with:
-        repository: RobiNino/jfrog-testing-infra #todo change to jfrog
-        path: jfrog-testing-infra
-        ref: rt-setup #todo remove
     - name: Setup Artifactory
       run: |
-        cd jfrog-testing-infra
-        go run main.go
+        echo $GOBIN
+        go install github.com/RobiNino/jfrog-testing-infra/go@latest
+        $GOBIN/go
       env:
         RTLIC: ${{secrets.RTLIC}}
+        GOPROXY: direct
     - name: repository tests
       run:  |
         cd jfrog-client-go
