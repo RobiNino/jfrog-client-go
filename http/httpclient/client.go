@@ -3,6 +3,8 @@ package httpclient
 import (
 	"bytes"
 	"context"
+	krb5Client "github.com/jcmturner/gokrb5/v8/client"
+	"github.com/jcmturner/gokrb5/v8/spnego"
 	"github.com/minio/sha256-simd"
 	"strings"
 	//#nosec G505 -- sha1 is supported by Artifactory.
@@ -31,6 +33,7 @@ type HttpClient struct {
 	ctx                context.Context
 	retries            int
 	retryWaitMilliSecs int
+	kerberosClient     *krb5Client.Client
 }
 
 const (
@@ -190,7 +193,7 @@ func (jc *HttpClient) doRequest(req *http.Request, content []byte, followRedirec
 		}
 	}
 
-	resp, err = client.Do(req)
+	resp, err = doWithCustomClient(req, client, jc.kerberosClient)
 	if err != nil && redirectUrl != "" {
 		if !followRedirect {
 			log.Debug("Blocking HTTP redirect to", redirectUrl)
@@ -339,7 +342,7 @@ func (jc *HttpClient) UploadFileFromReader(reader io.Reader, url string, httpCli
 	addUserAgentHeader(req)
 
 	client := jc.client
-	resp, err = client.Do(req)
+	resp, err = doWithCustomClient(req, client, jc.kerberosClient)
 	if errorutils.CheckError(err) != nil || resp == nil {
 		return
 	}
@@ -834,6 +837,14 @@ func setAuthentication(req *http.Request, httpClientsDetails httputils.HttpClien
 
 func addUserAgentHeader(req *http.Request) {
 	req.Header.Set("User-Agent", utils.GetUserAgent())
+}
+
+func doWithCustomClient(req *http.Request, httpClient *http.Client, kerberosClient *krb5Client.Client) (*http.Response, error) {
+	if kerberosClient != nil {
+		log.Debug(">>KERBEROS>> Using Kerberos authentication...")
+		return spnego.NewClient(kerberosClient, httpClient, "").Do(req)
+	}
+	return httpClient.Do(req)
 }
 
 type DownloadFileDetails struct {

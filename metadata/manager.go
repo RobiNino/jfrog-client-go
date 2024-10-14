@@ -30,6 +30,7 @@ func NewManager(config config.Config) (Manager, error) {
 		SetOverallRequestTimeout(config.GetOverallRequestTimeout()).
 		SetRetries(config.GetHttpRetries()).
 		SetRetryWaitMilliSecs(config.GetHttpRetryWaitMilliSecs()).
+		SetKerberosDetails(config.GetKerberosDetails()).
 		Build()
 
 	return manager, err

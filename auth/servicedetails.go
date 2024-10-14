@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"github.com/jfrog/jfrog-client-go/http/httpclient"
 	"sync"
 	"time"
 
@@ -31,6 +32,7 @@ type ServiceDetails interface {
 	GetSshAuthHeaders() map[string]string
 	GetClient() *jfroghttpclient.JfrogHttpClient
 	GetVersion() (string, error)
+	GetKerberosDetails() httpclient.KerberosDetails
 
 	SetUrl(url string)
 	SetUser(user string)
@@ -47,6 +49,7 @@ type ServiceDetails interface {
 	SetClient(client *jfroghttpclient.JfrogHttpClient)
 	SetDialTimeout(dialTimeout time.Duration)
 	SetOverallRequestTimeout(overallRequestTimeout time.Duration)
+	SetKerberosDetails(kerberosDetails httpclient.KerberosDetails)
 
 	IsSshAuthHeaderSet() bool
 	IsSshAuthentication() bool
@@ -58,23 +61,24 @@ type ServiceDetails interface {
 }
 
 type CommonConfigFields struct {
-	Url                    string                         `json:"-"`
-	User                   string                         `json:"-"`
-	Password               string                         `json:"-"`
-	ApiKey                 string                         `json:"-"`
-	AccessToken            string                         `json:"-"`
-	PreRequestInterceptors []ServiceDetailsPreRequestFunc `json:"-"`
-	ClientCertPath         string                         `json:"-"`
-	ClientCertKeyPath      string                         `json:"-"`
-	Version                string                         `json:"-"`
-	SshUrl                 string                         `json:"-"`
-	SshKeyPath             string                         `json:"-"`
-	SshPassphrase          string                         `json:"-"`
-	SshAuthHeaders         map[string]string              `json:"-"`
-	TokenMutex             sync.Mutex
-	client                 *jfroghttpclient.JfrogHttpClient
-	dialTimeout            time.Duration
-	overallRequestTimeout  time.Duration
+	Url                        string                         `json:"-"`
+	User                       string                         `json:"-"`
+	Password                   string                         `json:"-"`
+	ApiKey                     string                         `json:"-"`
+	AccessToken                string                         `json:"-"`
+	PreRequestInterceptors     []ServiceDetailsPreRequestFunc `json:"-"`
+	ClientCertPath             string                         `json:"-"`
+	ClientCertKeyPath          string                         `json:"-"`
+	Version                    string                         `json:"-"`
+	SshUrl                     string                         `json:"-"`
+	SshKeyPath                 string                         `json:"-"`
+	SshPassphrase              string                         `json:"-"`
+	SshAuthHeaders             map[string]string              `json:"-"`
+	httpclient.KerberosDetails `json:"-"`
+	TokenMutex                 sync.Mutex
+	client                     *jfroghttpclient.JfrogHttpClient
+	dialTimeout                time.Duration
+	overallRequestTimeout      time.Duration
 }
 
 func (ccf *CommonConfigFields) GetUrl() string {
@@ -127,6 +131,10 @@ func (ccf *CommonConfigFields) GetSshAuthHeaders() map[string]string {
 
 func (ccf *CommonConfigFields) GetClient() *jfroghttpclient.JfrogHttpClient {
 	return ccf.client
+}
+
+func (ccf *CommonConfigFields) GetKerberosDetails() httpclient.KerberosDetails {
+	return ccf.KerberosDetails
 }
 
 func (ccf *CommonConfigFields) SetUrl(url string) {
@@ -187,6 +195,10 @@ func (ccf *CommonConfigFields) SetDialTimeout(dialTimeout time.Duration) {
 
 func (ccf *CommonConfigFields) SetOverallRequestTimeout(overallRequestTimeout time.Duration) {
 	ccf.overallRequestTimeout = overallRequestTimeout
+}
+
+func (ccf *CommonConfigFields) SetKerberosDetails(kerberosDetails httpclient.KerberosDetails) {
+	ccf.KerberosDetails = kerberosDetails
 }
 
 func (ccf *CommonConfigFields) IsSshAuthHeaderSet() bool {

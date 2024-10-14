@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"github.com/jfrog/jfrog-client-go/http/httpclient"
 	"net/http"
 	"time"
 
@@ -22,6 +23,7 @@ type Config interface {
 	GetHttpRetries() int
 	GetHttpRetryWaitMilliSecs() int
 	GetHttpClient() *http.Client
+	GetKerberosDetails() httpclient.KerberosDetails
 }
 
 type servicesConfig struct {
@@ -37,6 +39,7 @@ type servicesConfig struct {
 	httpRetries            int
 	httpRetryWaitMilliSecs int
 	httpClient             *http.Client
+	kerberosDetails        httpclient.KerberosDetails
 }
 
 func (config *servicesConfig) IsDryRun() bool {
@@ -85,4 +88,8 @@ func (config *servicesConfig) GetHttpRetryWaitMilliSecs() int {
 
 func (config *servicesConfig) GetHttpClient() *http.Client {
 	return config.httpClient
+}
+
+func (config *servicesConfig) GetKerberosDetails() httpclient.KerberosDetails {
+	return config.kerberosDetails
 }

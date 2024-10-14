@@ -1,9 +1,8 @@
 package artifactory
 
 import (
-	"io"
-
 	"github.com/jfrog/jfrog-client-go/auth"
+	"io"
 
 	buildinfo "github.com/jfrog/build-info-go/entities"
 
@@ -618,5 +617,6 @@ func buildJFrogHttpClient(config config.Config, authDetails auth.ServiceDetails)
 		SetRetries(config.GetHttpRetries()).
 		SetRetryWaitMilliSecs(config.GetHttpRetryWaitMilliSecs()).
 		SetHttpClient(config.GetHttpClient()).
+		SetKerberosDetails(config.GetKerberosDetails()).
 		Build()
 }

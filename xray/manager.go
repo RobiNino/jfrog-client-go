@@ -29,6 +29,7 @@ func New(config config.Config) (*XrayServicesManager, error) {
 		AppendPreRequestInterceptor(details.RunPreRequestFunctions).
 		SetRetries(config.GetHttpRetries()).
 		SetRetryWaitMilliSecs(config.GetHttpRetryWaitMilliSecs()).
+		SetKerberosDetails(config.GetKerberosDetails()).
 		Build()
 	return manager, err
 }

@@ -30,6 +30,7 @@ type servicesConfigBuilder struct {
 	httpRetries            int
 	httpRetryWaitMilliSecs int
 	httpClient             *http.Client
+	kerberosDetails        httpclient.KerberosDetails
 }
 
 func (builder *servicesConfigBuilder) SetServiceDetails(artDetails auth.ServiceDetails) *servicesConfigBuilder {
@@ -87,6 +88,11 @@ func (builder *servicesConfigBuilder) SetHttpClient(httpClient *http.Client) *se
 	return builder
 }
 
+func (builder *servicesConfigBuilder) SetKerberosDetails(kerberosDetails httpclient.KerberosDetails) *servicesConfigBuilder {
+	builder.kerberosDetails = kerberosDetails
+	return builder
+}
+
 func (builder *servicesConfigBuilder) Build() (Config, error) {
 	c := &servicesConfig{}
 	c.ServiceDetails = builder.ServiceDetails
@@ -100,5 +106,6 @@ func (builder *servicesConfigBuilder) Build() (Config, error) {
 	c.httpRetries = builder.httpRetries
 	c.httpRetryWaitMilliSecs = builder.httpRetryWaitMilliSecs
 	c.httpClient = builder.httpClient
+	c.kerberosDetails = builder.kerberosDetails
 	return c, nil
 }

@@ -3,6 +3,10 @@ package httpclient
 import (
 	"context"
 	"crypto/tls"
+	krb5Client "github.com/jcmturner/gokrb5/v8/client"
+	krb5Cofig "github.com/jcmturner/gokrb5/v8/config"
+	"github.com/jcmturner/gokrb5/v8/keytab"
+	"github.com/jfrog/jfrog-client-go/utils/log"
 	"net"
 	"net/http"
 	"time"
@@ -30,6 +34,7 @@ type httpClientBuilder struct {
 	retries               int
 	retryWaitMilliSecs    int
 	httpClient            *http.Client
+	kerberosDetails       KerberosDetails
 }
 
 func (builder *httpClientBuilder) SetCertificatesPath(certificatesPath string) *httpClientBuilder {
@@ -54,6 +59,11 @@ func (builder *httpClientBuilder) SetInsecureTls(insecureTls bool) *httpClientBu
 
 func (builder *httpClientBuilder) SetHttpClient(httpClient *http.Client) *httpClientBuilder {
 	builder.httpClient = httpClient
+	return builder
+}
+
+func (builder *httpClientBuilder) SetKerberosDetails(kerberosDetails KerberosDetails) *httpClientBuilder {
+	builder.kerberosDetails = kerberosDetails
 	return builder
 }
 
@@ -94,12 +104,16 @@ func (builder *httpClientBuilder) AddClientCertToTransport(transport *http.Trans
 }
 
 func (builder *httpClientBuilder) Build() (*HttpClient, error) {
-	if builder.httpClient != nil {
-		// Using a custom http.Client, pass-though.
-		return &HttpClient{client: builder.httpClient, ctx: builder.ctx, retries: builder.retries, retryWaitMilliSecs: builder.retryWaitMilliSecs}, nil
+	kerberosClient, err := builder.createKerberosClientIfNeeded()
+	if err != nil {
+		return nil, err
 	}
 
-	var err error
+	if builder.httpClient != nil {
+		// Using a custom http.Client, pass-though.
+		return &HttpClient{client: builder.httpClient, ctx: builder.ctx, retries: builder.retries, retryWaitMilliSecs: builder.retryWaitMilliSecs, kerberosClient: kerberosClient}, nil
+	}
+
 	var transport *http.Transport
 
 	if builder.certificatesDirPath == "" {
@@ -113,7 +127,7 @@ func (builder *httpClientBuilder) Build() (*HttpClient, error) {
 		}
 	}
 	err = builder.AddClientCertToTransport(transport)
-	return &HttpClient{client: &http.Client{Transport: transport, Timeout: builder.overallRequestTimeout}, ctx: builder.ctx, retries: builder.retries, retryWaitMilliSecs: builder.retryWaitMilliSecs}, err
+	return &HttpClient{client: &http.Client{Transport: transport, Timeout: builder.overallRequestTimeout}, ctx: builder.ctx, retries: builder.retries, retryWaitMilliSecs: builder.retryWaitMilliSecs, kerberosClient: kerberosClient}, err
 }
 
 func (builder *httpClientBuilder) createDefaultHttpTransport() *http.Transport {
@@ -129,4 +143,49 @@ func (builder *httpClientBuilder) createDefaultHttpTransport() *http.Transport {
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
 	}
+}
+
+func (builder *httpClientBuilder) createKerberosClientIfNeeded() (*krb5Client.Client, error) {
+	log.Debug(">>KERBEROS>> Initializing Kerberos client...")
+	krb5Details := builder.kerberosDetails
+	if krb5Details.Krb5ConfigPath == "" || (krb5Details.Password == "" && krb5Details.KeytabPath == "") {
+		log.Debug(">>KERBEROS>> kerberos details missing, skipping Kerberos client initialization...")
+		return nil, nil
+	}
+
+	krbConf, err := krb5Cofig.Load(krb5Details.Krb5ConfigPath)
+	if err != nil {
+		log.Debug(">>KERBEROS>> Error encountered when loading Krb5 config from path: ", krb5Details.Krb5ConfigPath, "error: ", err)
+		return nil, err
+	}
+
+	var cl *krb5Client.Client
+	if krb5Details.Password != "" {
+		log.Debug(">>KERBEROS>> Initializing Kerberos client with password...")
+		cl = krb5Client.NewWithPassword(krb5Details.Username, krb5Details.Realm, krb5Details.Password, krbConf, krb5Client.DisablePAFXFAST(true))
+	} else if krb5Details.KeytabPath != "" {
+		log.Debug(">>KERBEROS>> Initializing Kerberos client with keytab...")
+		ktFromFile, err := keytab.Load(krb5Details.KeytabPath)
+		if err != nil {
+			log.Debug(">>KERBEROS>> Error encountered when loading keytab from path: ", krb5Details.KeytabPath, "error: ", err)
+			return nil, err
+		}
+		cl = krb5Client.NewWithKeytab(krb5Details.Username, krb5Details.Realm, ktFromFile, krbConf, krb5Client.DisablePAFXFAST(true))
+	}
+
+	err = cl.Login()
+	if err != nil {
+		log.Debug(">>KERBEROS>> Error encountered when trying to log in the client. error: ", err)
+		return nil, err
+	}
+	log.Debug(">>KERBEROS>> Done initializing Kerberos client...")
+	return cl, nil
+}
+
+type KerberosDetails struct {
+	Krb5ConfigPath string `json:"krb5ConfigPath,omitempty"`
+	Username       string `json:"username,omitempty"`
+	Realm          string `json:"realm,omitempty"`
+	Password       string `json:"password,omitempty"`
+	KeytabPath     string `json:"keytabPath,omitempty"`
 }

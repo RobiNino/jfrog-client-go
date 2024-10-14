@@ -26,6 +26,7 @@ type jfrogHttpClientBuilder struct {
 	dialTimeout            time.Duration
 	overallRequestTimeout  time.Duration
 	httpClient             *http.Client
+	kerberosDetails        httpclient.KerberosDetails
 }
 
 func (builder *jfrogHttpClientBuilder) SetCertificatesPath(certificatesPath string) *jfrogHttpClientBuilder {
@@ -83,6 +84,11 @@ func (builder *jfrogHttpClientBuilder) SetHttpClient(httpClient *http.Client) *j
 	return builder
 }
 
+func (builder *jfrogHttpClientBuilder) SetKerberosDetails(kerberosDetails httpclient.KerberosDetails) *jfrogHttpClientBuilder {
+	builder.kerberosDetails = kerberosDetails
+	return builder
+}
+
 func (builder *jfrogHttpClientBuilder) Build() (rtHttpClient *JfrogHttpClient, err error) {
 	rtHttpClient = &JfrogHttpClient{preRequestInterceptors: builder.preRequestInterceptors}
 	rtHttpClient.httpClient, err = httpclient.ClientBuilder().
@@ -96,6 +102,7 @@ func (builder *jfrogHttpClientBuilder) Build() (rtHttpClient *JfrogHttpClient, e
 		SetRetries(builder.retries).
 		SetRetryWaitMilliSecs(builder.retryWaitTimMilliSecs).
 		SetHttpClient(builder.httpClient).
+		SetKerberosDetails(builder.kerberosDetails).
 		Build()
 	return
 }
